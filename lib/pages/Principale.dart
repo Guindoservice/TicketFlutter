@@ -10,19 +10,22 @@ class Principale extends StatefulWidget {
 
 class _PrincipaleState extends State<Principale> {
   int _IndexSelect = 0;
+
   void _OnTapIndex(int index) {
     setState(() {
       _IndexSelect = index;
     });
+
+    // Navigation vers la page correspondante
     switch (index) {
       case 0:
-        Navigator.popAndPushNamed(context, "/Principale");
+        Navigator.pushReplacementNamed(context, "/Principale");
         break;
       case 1:
-        Navigator.popAndPushNamed(context, "/Historique");
+        Navigator.pushReplacementNamed(context, "/Historique");
         break;
       case 2:
-        Navigator.popAndPushNamed(context, "/User");
+        Navigator.pushReplacementNamed(context, "/User");
         break;
     }
   }
@@ -136,7 +139,9 @@ class _PrincipaleState extends State<Principale> {
                         borderRadius: BorderRadius.circular(8),
                         // Coins arrondis
                       )),
-                  onPressed: () {}),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/Catpedagogique');
+                  }),
             ],
           ),
           //DEUXIEME LIGNE ************************************************************************
@@ -159,7 +164,9 @@ class _PrincipaleState extends State<Principale> {
                         borderRadius: BorderRadius.circular(8),
                         // Coins arrondis
                       )),
-                  onPressed: () {}),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/CatPratique');
+                  }),
               // boutton 2 *********************************************************************************
               SizedBox(
                 width: 7,
@@ -177,7 +184,9 @@ class _PrincipaleState extends State<Principale> {
                         borderRadius: BorderRadius.circular(8),
                         // Coins arrondis
                       )),
-                  onPressed: () {}),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/Cattheorique');
+                  }),
             ],
           ),
         ],
@@ -202,6 +211,7 @@ class _PrincipaleState extends State<Principale> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
+            // Bouton Home
             Container(
               decoration: BoxDecoration(
                 color:
@@ -211,8 +221,7 @@ class _PrincipaleState extends State<Principale> {
               child: IconButton(
                 icon: Icon(
                   Icons.home,
-                  color:
-                      _IndexSelect == 0 ? Color(0xFFFFFFFF) : Color(0xFF5CA767),
+                  color: _IndexSelect == 0 ? Colors.white : Color(0xFF5CA767),
                 ),
                 onPressed: () => _OnTapIndex(0),
                 iconSize: 30,
@@ -222,6 +231,7 @@ class _PrincipaleState extends State<Principale> {
                 constraints: BoxConstraints(),
               ),
             ),
+            // Bouton Historique
             Container(
               decoration: BoxDecoration(
                 color:
@@ -231,8 +241,7 @@ class _PrincipaleState extends State<Principale> {
               child: IconButton(
                 icon: Icon(
                   Icons.update,
-                  color:
-                      _IndexSelect == 1 ? Color(0xFFFFFFFF) : Color(0xFF5CA767),
+                  color: _IndexSelect == 1 ? Colors.white : Color(0xFF5CA767),
                 ),
                 onPressed: () => _OnTapIndex(1),
                 iconSize: 30,
@@ -242,6 +251,7 @@ class _PrincipaleState extends State<Principale> {
                 constraints: BoxConstraints(),
               ),
             ),
+            // Bouton User
             Container(
               decoration: BoxDecoration(
                 color:
@@ -251,8 +261,7 @@ class _PrincipaleState extends State<Principale> {
               child: IconButton(
                 icon: Icon(
                   Icons.person,
-                  color:
-                      _IndexSelect == 2 ? Color(0xFFFFFFFF) : Color(0xFF5CA767),
+                  color: _IndexSelect == 2 ? Colors.white : Color(0xFF5CA767),
                 ),
                 onPressed: () => _OnTapIndex(2),
                 iconSize: 30,

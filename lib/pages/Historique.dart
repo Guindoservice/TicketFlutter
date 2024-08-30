@@ -10,19 +10,22 @@ class Historique extends StatefulWidget {
 
 class _CateTechniqueState extends State<Historique> {
   int _IndexSelect = 0;
+
   void _OnTapIndex(int index) {
     setState(() {
       _IndexSelect = index;
     });
+
+    // Navigation vers la page correspondante
     switch (index) {
       case 0:
-        Navigator.popAndPushNamed(context, "/Principale");
+        Navigator.pushReplacementNamed(context, "/Historique");
         break;
       case 1:
-        Navigator.popAndPushNamed(context, "/Historique");
+        Navigator.pushReplacementNamed(context, "/Principale");
         break;
       case 2:
-        Navigator.popAndPushNamed(context, "/User");
+        Navigator.pushReplacementNamed(context, "/User");
         break;
     }
   }
@@ -121,26 +124,7 @@ class _CateTechniqueState extends State<Historique> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            Container(
-              decoration: BoxDecoration(
-                color:
-                    _IndexSelect == 0 ? Color(0xFF5CA767) : Colors.transparent,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: Icon(
-                  Icons.home,
-                  color:
-                      _IndexSelect == 0 ? Color(0xFFFFFFFF) : Color(0xFF5CA767),
-                ),
-                onPressed: () => _OnTapIndex(0),
-                iconSize: 30,
-                padding: EdgeInsets.all(12.0),
-                splashRadius: 20.0,
-                splashColor: Colors.transparent,
-                constraints: BoxConstraints(),
-              ),
-            ),
+            // Bouton Home
             Container(
               decoration: BoxDecoration(
                 color:
@@ -149,9 +133,8 @@ class _CateTechniqueState extends State<Historique> {
               ),
               child: IconButton(
                 icon: Icon(
-                  Icons.update,
-                  color:
-                      _IndexSelect == 1 ? Color(0xFFFFFFFF) : Color(0xFF5CA767),
+                  Icons.home,
+                  color: _IndexSelect == 1 ? Colors.white : Color(0xFF5CA767),
                 ),
                 onPressed: () => _OnTapIndex(1),
                 iconSize: 30,
@@ -161,6 +144,27 @@ class _CateTechniqueState extends State<Historique> {
                 constraints: BoxConstraints(),
               ),
             ),
+            // Bouton Historique
+            Container(
+              decoration: BoxDecoration(
+                color:
+                    _IndexSelect == 0 ? Color(0xFF5CA767) : Colors.transparent,
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: Icon(
+                  Icons.update,
+                  color: _IndexSelect == 0 ? Colors.white : Color(0xFF5CA767),
+                ),
+                onPressed: () => _OnTapIndex(0),
+                iconSize: 30,
+                padding: EdgeInsets.all(12.0),
+                splashRadius: 20.0,
+                splashColor: Colors.transparent,
+                constraints: BoxConstraints(),
+              ),
+            ),
+            // Bouton User
             Container(
               decoration: BoxDecoration(
                 color:
@@ -170,8 +174,7 @@ class _CateTechniqueState extends State<Historique> {
               child: IconButton(
                 icon: Icon(
                   Icons.person,
-                  color:
-                      _IndexSelect == 2 ? Color(0xFFFFFFFF) : Color(0xFF5CA767),
+                  color: _IndexSelect == 2 ? Colors.white : Color(0xFF5CA767),
                 ),
                 onPressed: () => _OnTapIndex(2),
                 iconSize: 30,

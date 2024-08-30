@@ -10,6 +10,7 @@ import 'package:gestion_ticket/ticket/DetailTicket.dart';
 import 'package:gestion_ticket/ticket/ListeNoRepondu.dart';
 import 'package:gestion_ticket/ticket/ReponseTicket.dart';
 import 'package:gestion_ticket/users/LoginPage.dart';
+//import 'package:firebase_core/firebase_core.dart';
 
 import 'categorie/CatPedagogique.dart';
 import 'categorie/CatPratique.dart';
@@ -17,6 +18,8 @@ import 'categorie/CatTechnique.dart';
 import 'categorie/CatTheorique.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  //await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -42,7 +45,7 @@ class MyApp extends StatelessWidget {
         "/Listenorepondu": (context) => Listenorepondu(),
       },
       title: "Accueil",
-      home: Historique(),
+      home: Homepage(),
       theme: ThemeData(
           indicatorColor: Colors.white,
           colorScheme: ColorScheme.fromSeed(

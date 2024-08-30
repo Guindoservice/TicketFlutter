@@ -38,7 +38,7 @@ class _DateSearchExampleState extends State<Catpedagogique> {
         title: Text('Recherche par date'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           children: <Widget>[
             TextField(
