@@ -32,6 +32,57 @@ class _UserState extends State<User> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xFF5CA767),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Color(0xFFFFFFFF),
+          ),
+          onPressed: () {
+            Navigator.popAndPushNamed(context, "/Principale");
+          },
+        ),
+        title: Center(
+          child: Text(
+            "Utilisateurs",
+            style: TextStyle(fontSize: 25, color: Color(0xFFFFFFFF)),
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/Principale');
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF5CA767),
+                padding: EdgeInsets.symmetric(horizontal: 35, vertical: 25),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Image.asset(
+                    "assets/images/abblo.png",
+                    width: 40,
+                    height: 40,
+                  ),
+                  SizedBox(width: 8), // Espacement entre l'image et le texte
+                  Text(
+                    "Formateur",
+                    style: TextStyle(fontSize: 15, color: Color(0xFFFFFFFF)),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
       bottomNavigationBar: BottomAppBar(
         color: Color(0xFFFFFFFF),
         shape: CircularNotchedRectangle(),

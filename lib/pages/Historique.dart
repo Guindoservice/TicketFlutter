@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gestion_ticket/pages/ChatPage.dart';
+import 'package:gestion_ticket/pages/Principale.dart';
 import 'package:intl/intl.dart';
 
 class Historique extends StatefulWidget {
@@ -19,13 +21,22 @@ class _CateTechniqueState extends State<Historique> {
     // Navigation vers la page correspondante
     switch (index) {
       case 0:
-        Navigator.pushReplacementNamed(context, "/Historique");
+        Navigator.pop(
+          context,
+          MaterialPageRoute(builder: (context) => Historique()),
+        );
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, "/Principale");
+        Navigator.pop(
+          context,
+          MaterialPageRoute(builder: (context) => Principale()),
+        );
         break;
       case 2:
-        Navigator.pushReplacementNamed(context, "/User");
+        Navigator.pop(
+          context,
+          MaterialPageRoute(builder: (context) => Chatpage()),
+        );
         break;
     }
   }
@@ -168,15 +179,15 @@ class _CateTechniqueState extends State<Historique> {
             Container(
               decoration: BoxDecoration(
                 color:
-                    _IndexSelect == 2 ? Color(0xFF5CA767) : Colors.transparent,
+                    _IndexSelect == 1 ? Color(0xFF5CA767) : Colors.transparent,
                 shape: BoxShape.circle,
               ),
               child: IconButton(
                 icon: Icon(
-                  Icons.person,
-                  color: _IndexSelect == 2 ? Colors.white : Color(0xFF5CA767),
+                  Icons.chat,
+                  color: _IndexSelect == 1 ? Colors.white : Color(0xFF5CA767),
                 ),
-                onPressed: () => _OnTapIndex(2),
+                onPressed: () => _OnTapIndex(1),
                 iconSize: 30,
                 padding: EdgeInsets.all(12.0),
                 splashRadius: 20.0,

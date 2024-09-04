@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -6,32 +7,65 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _username = TextEditingController();
+  final _email = TextEditingController();
   final _password = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _masquePassword = true;
+  Future<void> _connect() async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: _email.text,
+        password: _password.text,
+      );
+      // Connexion réussie, naviguer vers la page principale
+      Navigator.popAndPushNamed(context, "/Principale");
+    } catch (e) {
+      // Afficher un message d'erreur à l'utilisateur
+      print('Erreur de connexion : $e');
+      _showErrorDialog(e.toString());
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Erreur'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     Color persianIndigo = Color(0xFF5CA767);
     return Scaffold(
       appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Color(0xFFFFFFFF),
-            ),
-            onPressed: () {
-              Navigator.popAndPushNamed(context, "/Homepage");
-            },
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Color(0xFFFFFFFF),
           ),
-          backgroundColor: persianIndigo,
-          title: Center(
-            child: Text(
-              "Page d'authentification",
-              style: TextStyle(
-                color: Color(0xFFFFFFFF),
-              ),
-            ),
-          )),
+          onPressed: () {
+            Navigator.popAndPushNamed(context, "/Homepage");
+          },
+        ),
+        backgroundColor: persianIndigo,
+        title: Center(
+          child: Text(
+            "Page d'authentification",
+            style: TextStyle(color: Color(0xFFFFFFFF)),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -42,63 +76,54 @@ class _LoginPageState extends State<LoginPage> {
               Container(
                 width: 200,
                 height: 200,
-                child: Image.asset(
-                  "assets/images/logoTicke.png",
-                ),
+                child: Image.asset("assets/images/logoTicke.png"),
               ),
-              Container(
-                child: Text(
-                  "Authentification",
-                  style: TextStyle(fontSize: 40),
+              Text(
+                "Authentification",
+                style: TextStyle(fontSize: 40),
+              ),
+              TextFormField(
+                controller: _email,
+                decoration: InputDecoration(
+                  labelText: "Email",
+                  prefixIcon: Icon(Icons.email, color: Color(0xFF312070)),
                 ),
               ),
               TextFormField(
-                  controller: _username,
-                  decoration: InputDecoration(
-                    labelText: "Nom d'utilisateur",
-                    prefixIcon: Icon(Icons.person, color: Color(0xFF312070)),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Nom d\'utilisateur est incorect Veillez ressayer ';
-                    }
-                    return null;
-                  }),
-              TextFormField(
-                  controller: _password,
-                  decoration: InputDecoration(
-                      labelText: "Mot de passe",
-                      prefixIcon: Icon(Icons.lock, color: Color(0xFF312070)),
-                      suffixIcon: Icon(
-                        Icons.visibility,
+                controller: _password,
+                obscureText: _masquePassword,
+                decoration: InputDecoration(
+                  labelText: "Mot de passe",
+                  prefixIcon: Icon(Icons.lock, color: Color(0xFF312070)),
+                  suffixIcon: IconButton(
+                      icon: Icon(
+                        _masquePassword
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                         color: Color(0xFF312070),
-                      )),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Mot de passe incorect veillez saissir un mot de pase correct";
-                    }
-                    return null;
-                  }),
-              SizedBox(
-                height: 40,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _masquePassword = !_masquePassword;
+                        });
+                      }),
+                ),
               ),
+              SizedBox(height: 40),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.popAndPushNamed(context, "/Principale");
-                },
+                onPressed: _connect, // Appel de la méthode de connexion
                 child: Text(
                   "Se connecter",
                   style: TextStyle(fontSize: 20),
                 ),
-                //mise en form de bouton
                 style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Color(0xFF312070),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 100, vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8), // Coins arrondis
-                    )),
+                  foregroundColor: Colors.white,
+                  backgroundColor: Color(0xFF312070),
+                  padding: EdgeInsets.symmetric(horizontal: 100, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8), // Coins arrondis
+                  ),
+                ),
               ),
             ],
           ),
@@ -107,5 +132,10 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // login de la connexion
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
 }

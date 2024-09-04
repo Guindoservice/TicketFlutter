@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "82325824078",
+    "project_id": "gestionticket-b8cfb",
+    "storage_bucket": "gestionticket-b8cfb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:82325824078:android:598360379594d193d6991f",
+        "android_client_info": {
+          "package_name": "com.example.gestion_ticket"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHIDY9EAIA0Mq1s7ET-sG32G4ahP556E0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

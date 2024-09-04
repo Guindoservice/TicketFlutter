@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/rendering.dart';
+import 'package:gestion_ticket/pages/ChatPage.dart';
+import 'package:gestion_ticket/pages/Historique.dart';
+import 'package:gestion_ticket/ticket/ReponseTicket.dart';
+
+import '../categorie/CatTechnique.dart';
+import '../ticket/ListeNoRepondu.dart';
 
 class Principale extends StatefulWidget {
   const Principale({super.key});
@@ -10,7 +17,7 @@ class Principale extends StatefulWidget {
 
 class _PrincipaleState extends State<Principale> {
   int _IndexSelect = 0;
-
+// pour le choix des appbar en click
   void _OnTapIndex(int index) {
     setState(() {
       _IndexSelect = index;
@@ -19,15 +26,28 @@ class _PrincipaleState extends State<Principale> {
     // Navigation vers la page correspondante
     switch (index) {
       case 0:
-        Navigator.pushReplacementNamed(context, "/Principale");
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Principale()),
+        );
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, "/Historique");
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Historique()),
+        );
         break;
       case 2:
-        Navigator.pushReplacementNamed(context, "/User");
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Chatpage()),
+        );
         break;
     }
+  }
+
+  void _Loginpage() {
+    Navigator.pushNamed(context, '/LoginPage');
   }
 
   final List<String> listeImage = [
@@ -53,147 +73,279 @@ class _PrincipaleState extends State<Principale> {
         ),
         title: Center(
           child: Text(
-            "G-Ticket",
+            "Catégorie",
             style: TextStyle(fontSize: 25, color: Color(0xFFFFFFFF)),
           ),
         ),
-      ),
-      body: Column(
-        mainAxisAlignment:
-            MainAxisAlignment.start, // Aligne les éléments en haut
-        crossAxisAlignment:
-            CrossAxisAlignment.center, // Centre l'image horizontalement
-
-        children: [
-          //pour le slider les images
-          SizedBox(
-            height: 10,
-          ),
-          CarouselSlider(
-            options: CarouselOptions(
-              height: 300,
-              autoPlay: true,
-              enlargeCenterPage: true,
-              aspectRatio: 16 / 9,
-              enableInfiniteScroll: true,
-              autoPlayInterval: Duration(seconds: 3),
+        //bouton pour afficher le pop des users
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.person,
+              color: Color(0xFFFFFFFF),
             ),
-            items: listeImage.map((imagepath) {
-              return Builder(
-                builder: (BuildContext context) {
-                  return Container(
-                    margin: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Color(0xFF5CA767), width: 3),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        imagepath,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
+            onPressed: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Container(
+                      height: 300,
+                      color: Color(0xFF5CA767),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            // choix des users
+                            InkWell(
+                              onTap: _Loginpage,
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                              color: Color(0xFFFFFFFF),
+                                              width: 3))),
+                                  child: ListTile(
+                                    leading: Icon(
+                                      Icons.person,
+                                      color: Color(
+                                        0xFF312776,
+                                      ),
+                                      size: 40,
+                                    ),
+                                    title: Text(
+                                      "Formateur",
+                                      style: TextStyle(
+                                          fontSize: 40,
+                                          color: Color(0xFFFFFFFF)),
+                                    ),
+                                  )),
+                            ),
+                            // Compte Apprenant
+                            InkWell(
+                              onTap: _Loginpage,
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          bottom: BorderSide(
+                                              color: Color(0xFFFFFFFF),
+                                              width: 3))),
+                                  child: ListTile(
+                                    leading: Icon(
+                                      Icons.person,
+                                      color: Color(
+                                        0xFF312776,
+                                      ),
+                                      size: 40,
+                                    ),
+                                    title: Text(
+                                      "Apprenant",
+                                      style: TextStyle(
+                                          fontSize: 40,
+                                          color: Color(0xFFFFFFFF)),
+                                    ),
+                                  )),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
-            }).toList(),
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ElevatedButton(
-                  child: Text(
-                    "TECHNIQUE",
-                    style: TextStyle(fontSize: 20, color: Color(0xFFFFFFFF)),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF5CA767),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 35, vertical: 40),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        // Coins arrondis
-                      )),
-                  onPressed: () {
-                    Navigator.popAndPushNamed(context, '/CateTechnique');
-                  }),
-              // boutton 2 *********************************************************************************
-              SizedBox(
-                width: 7,
-              ),
-              ElevatedButton(
-                  child: Text(
-                    "PEDAGOGIQUE",
-                    style: TextStyle(fontSize: 15, color: Color(0xFFFFFFFF)),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF5CA767),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 35, vertical: 40),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        // Coins arrondis
-                      )),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/Catpedagogique');
-                  }),
-            ],
-          ),
-          //DEUXIEME LIGNE ************************************************************************
-          SizedBox(
-            height: 20,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ElevatedButton(
-                  child: Text(
-                    "PRATIQUE",
-                    style: TextStyle(fontSize: 20, color: Color(0xFFFFFFFF)),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF5CA767),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 35, vertical: 40),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        // Coins arrondis
-                      )),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/CatPratique');
-                  }),
-              // boutton 2 *********************************************************************************
-              SizedBox(
-                width: 7,
-              ),
-              ElevatedButton(
-                  child: Text(
-                    "THEORIQUE",
-                    style: TextStyle(fontSize: 20, color: Color(0xFFFFFFFF)),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF5CA767),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 35, vertical: 40),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        // Coins arrondis
-                      )),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/Cattheorique');
-                  }),
-            ],
-          ),
+                    );
+                  });
+            },
+          )
         ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment:
+              MainAxisAlignment.start, // Aligne les éléments en haut
+          crossAxisAlignment:
+              CrossAxisAlignment.center, // Centre l'image horizontalement
+
+          children: [
+            //pour le slider les images
+            SizedBox(
+              height: 10,
+            ),
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 300,
+                autoPlay: true,
+                enlargeCenterPage: true,
+                aspectRatio: 16 / 9,
+                enableInfiniteScroll: true,
+                autoPlayInterval: Duration(seconds: 3),
+              ),
+              items: listeImage.map((imagepath) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Container(
+                      margin: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Color(0xFF5CA767), width: 3),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.asset(
+                          imagepath,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }).toList(),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  ElevatedButton(
+                      child: Text(
+                        "Liste Ticket",
+                        style:
+                            TextStyle(fontSize: 20, color: Color(0xFFFFFFFF)),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF5CA767),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 35, vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            // Coins arrondis
+                          )),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Listenorepondu()),
+                        );
+                      }),
+                  // boutton 2 *********************************************************************************
+                  SizedBox(
+                    width: 12,
+                  ),
+                  ElevatedButton(
+                      child: Text(
+                        "Liste Reponse",
+                        style:
+                            TextStyle(fontSize: 20, color: Color(0xFFFFFFFF)),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF312070),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 35, vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            // Coins arrondis
+                          )),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Reponseticket()));
+                      }),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  //**********************************
+                  ElevatedButton(
+                      child: Text(
+                        "TECHNIQUE",
+                        style:
+                            TextStyle(fontSize: 20, color: Color(0xFFFFFFFF)),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF5CA767),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 35, vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            // Coins arrondis
+                          )),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CateTechnique(
+                                      id: '',
+                                    )));
+                      }),
+                  // boutton 2 *********************************************************************************
+                  SizedBox(
+                    width: 12,
+                  ),
+                  ElevatedButton(
+                      child: Text(
+                        "PEDAGOGIQUE",
+                        style:
+                            TextStyle(fontSize: 20, color: Color(0xFFFFFFFF)),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF312070),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 35, vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            // Coins arrondis
+                          )),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/Catpedagogique');
+                      }),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  ElevatedButton(
+                      child: Text(
+                        "PRATIQUE",
+                        style:
+                            TextStyle(fontSize: 20, color: Color(0xFFFFFFFF)),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF5CA767),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 35, vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            // Coins arrondis
+                          )),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/CatPratique');
+                      }),
+                  // boutton 2 *********************************************************************************
+                  SizedBox(
+                    width: 12,
+                  ),
+                  ElevatedButton(
+                      child: Text(
+                        "THEORIQUE",
+                        style:
+                            TextStyle(fontSize: 20, color: Color(0xFFFFFFFF)),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF312070),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 35, vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            // Coins arrondis
+                          )),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/Cattheorique');
+                      }),
+                ],
+              ),
+            ), //DEUXIEME LIGNE ************************************************************************
+          ],
+        ),
       ),
 
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xFF5CA767),
+        backgroundColor: Color(0xFF312070),
         onPressed: () {
           Navigator.popAndPushNamed(context, '/Apprenantform');
         },
@@ -260,7 +412,7 @@ class _PrincipaleState extends State<Principale> {
               ),
               child: IconButton(
                 icon: Icon(
-                  Icons.person,
+                  Icons.chat,
                   color: _IndexSelect == 2 ? Colors.white : Color(0xFF5CA767),
                 ),
                 onPressed: () => _OnTapIndex(2),

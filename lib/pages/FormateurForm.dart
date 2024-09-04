@@ -1,13 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Formateurform extends StatefulWidget {
   const Formateurform({super.key});
 
   @override
-  State<Formateurform> createState() => _ApprenantformState();
+  State<Formateurform> createState() => _FormateurformState(); // Renommé pour correspondre au widget
 }
 
-class _ApprenantformState extends State<Formateurform> {
+class _FormateurformState extends State<Formateurform> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedCategory;
   final List<String> _categories = [
@@ -18,6 +19,15 @@ class _ApprenantformState extends State<Formateurform> {
   ];
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+
+  // Ajout de la fonction pour vider les champs après soumission
+  void _clearFormFields() {
+    _titleController.clear();
+    _descriptionController.clear();
+    setState(() {
+      _selectedCategory = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,15 +53,13 @@ class _ApprenantformState extends State<Formateurform> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Texte en haut
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                " Répondre les questions en toute simplicité via le formulaire",
+                "Répondre les questions en toute simplicité via le formulaire",
                 style: TextStyle(fontSize: 18),
               ),
             ),
-            // Formulaire en bas
             Container(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -60,7 +68,6 @@ class _ApprenantformState extends State<Formateurform> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Champ Titre
                       TextFormField(
                         controller: _titleController,
                         decoration: InputDecoration(
@@ -75,7 +82,6 @@ class _ApprenantformState extends State<Formateurform> {
                         },
                       ),
                       SizedBox(height: 16),
-                      // Champ Description
                       TextFormField(
                         controller: _descriptionController,
                         decoration: InputDecoration(
@@ -91,7 +97,6 @@ class _ApprenantformState extends State<Formateurform> {
                         },
                       ),
                       SizedBox(height: 16),
-                      // Champ Catégorie
                       DropdownButtonFormField<String>(
                         value: _selectedCategory,
                         hint: Text('Choisissez une catégorie'),
@@ -118,26 +123,9 @@ class _ApprenantformState extends State<Formateurform> {
                         ),
                       ),
                       SizedBox(height: 20),
-                      // Bouton Soumettre
                       ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState?.validate() ?? false) {
-                            // Traiter les données du formulaire
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(
-                                      'Votre ticket a été soumises avec succès')),
-                            );
-                            // Vous pouvez accéder aux valeurs des champs ici
-                            print('Titre: ${_titleController.text}');
-                            print(
-                                'Description: ${_descriptionController.text}');
-                            print('Catégorie: $_selectedCategory');
-                          }
-                          //  Navigator.popAndPushNamed(context, '/Reponseticket');
-                        },
+                        onPressed: _submitForm,
                         child: Text('Enregistre'),
-                        //mise en form de bouton
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
                           backgroundColor: Color(0xFF312070),
@@ -145,8 +133,6 @@ class _ApprenantformState extends State<Formateurform> {
                               horizontal: 100, vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
-
-                            // Coins arrondis
                           ),
                           elevation: 8,
                         ),
@@ -161,4 +147,34 @@ class _ApprenantformState extends State<Formateurform> {
       ),
     );
   }
+
+  void _submitForm() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      String title = _titleController.text;
+      String description = _descriptionController.text;
+      String category = _selectedCategory!;
+
+      try {
+        await FirebaseFirestore.instance.collection('reponseTicket').doc().set({
+          'title': title,
+          'description': description,
+          'category': category,
+          'created_at': FieldValue.serverTimestamp(),
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Votre ticket a été soumis avec succès')),
+        );
+        _clearFormFields(); // Effacer les champs après soumission
+      } catch (e) {
+        print('Erreur lors de la sauvegarde des données : $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur lors de la soumission du ticket : $e')),
+        );
+      }
+    } else {
+      print("Formulaire non validé");
+    }
+  }
+
 }

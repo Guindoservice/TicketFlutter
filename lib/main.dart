@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gestion_ticket/pages/Apprenantform.dart';
 import 'package:gestion_ticket/pages/ChatPage.dart';
@@ -16,10 +17,16 @@ import 'categorie/CatPedagogique.dart';
 import 'categorie/CatPratique.dart';
 import 'categorie/CatTechnique.dart';
 import 'categorie/CatTheorique.dart';
+import 'dashbord/Accueil.dart';
+import 'dashbord/Utilisateur.dart';
+import 'firebase_options.dart';
+// Import the generated file
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 
@@ -31,21 +38,23 @@ class MyApp extends StatelessWidget {
         "/Homepage": (context) => Homepage(),
         "/LoginPage": (context) => LoginPage(),
         "/Principale": (context) => Principale(),
-        "/Historique": (context) => Historique(),
-        "/ChatPage": (context) => Chatpage(),
+        //  "/Historique": (context) => Historique(),
+        // "/ChatPage": (context) => Chatpage(),
         "/User": (context) => User(),
         "/Apprenantform": (context) => Apprenantform(),
-        "/CateTechnique": (context) => CateTechnique(),
+        //  "/CateTechnique": (context) => CateTechnique(),
         "/CatPratique": (context) => CatPratique(),
         "/Catpedagogique": (context) => Catpedagogique(),
         "/Cattheorique": (context) => Cattheorique(),
-        "/Detailticket": (context) => Detailticket(),
+        //"/Detailticket": (context) => Detailticket(),
         "/Formateurform": (context) => Formateurform(),
         "/Reponseticket": (context) => Reponseticket(),
-        "/Listenorepondu": (context) => Listenorepondu(),
+        //"/Listenorepondu": (context) => Listenorepondu(),
+        "/Dashbord": (context) => Dashbord(),
+        "/Formateur": (context) => Utilisateur(),
       },
       title: "Accueil",
-      home: Homepage(),
+      home: Dashbord(),
       theme: ThemeData(
           indicatorColor: Colors.white,
           colorScheme: ColorScheme.fromSeed(

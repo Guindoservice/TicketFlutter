@@ -1,32 +1,32 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Detailticket extends StatefulWidget {
-  const Detailticket({super.key});
+  final String title;
+  final String description;
+  final String id;
+  final String stauts;
+  const Detailticket({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.id,
+    required this.stauts,
+  });
 
   @override
   State<Detailticket> createState() => _DetailticketState();
 }
 
 class _DetailticketState extends State<Detailticket> {
-  int _IndexSelect = 0;
+  final _formkey = GlobalKey<FormState>();
+  final _titlController = TextEditingController();
+  final _descriptionController = TextEditingController();
 
-  void _OnTapIndex(int index) {
-    setState(() {
-      _IndexSelect = index;
-    });
-
-    // Navigation vers la page correspondante
-    switch (index) {
-      case 0:
-        Navigator.pushReplacementNamed(context, "/Principale");
-        break;
-      case 1:
-        Navigator.pushReplacementNamed(context, "/Historique");
-        break;
-      case 2:
-        Navigator.pushReplacementNamed(context, "/User");
-        break;
-    }
+  @override
+  void initState() {
+    _titlController.text = widget.title;
+    super.initState();
   }
 
   @override
@@ -67,7 +67,7 @@ class _DetailticketState extends State<Detailticket> {
               margin: EdgeInsets.only(
                   left: 16.0), // Margin pour décaler du bord gauche
               child: Text(
-                "Titre",
+                widget.title,
                 style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
@@ -80,11 +80,7 @@ class _DetailticketState extends State<Detailticket> {
             Container(
               margin: EdgeInsets.only(left: 10.0),
               child: Text(
-                "Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus quam numquam possimus exercitationem"
-                " labore vero itaque laborum omnis assumenda ipsam illo, sapiente tenetur odit nesciunt quaerat corrupti,"
-                " alias neque accusantium. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus quam "
-                "numquam possimus exercitationem labore vero itaque laborum omnis assumenda"
-                " ipsam illo, sapiente tenetur odit nesciunt quaerat corrupti, alias neque accusantium.",
+                widget.description,
                 style: TextStyle(
                     fontSize: 15,
                     fontStyle: FontStyle.italic,
@@ -97,9 +93,7 @@ class _DetailticketState extends State<Detailticket> {
             Center(
               child: Container(
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.popAndPushNamed(context, '/Formateurform');
-                  },
+                  onPressed: _showForm,
                   child: Text(
                     'Répondre Ticket',
                     style: TextStyle(fontSize: 16),
@@ -123,78 +117,94 @@ class _DetailticketState extends State<Detailticket> {
           ],
         ),
       ),
-      //la appbar de bas
-      bottomNavigationBar: BottomAppBar(
-        color: Color(0xFFFFFFFF),
-        shape: CircularNotchedRectangle(),
-        notchMargin: 8.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            // Bouton Home
-            Container(
-              decoration: BoxDecoration(
-                color:
-                    _IndexSelect == 0 ? Color(0xFF5CA767) : Colors.transparent,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: Icon(
-                  Icons.home,
-                  color: _IndexSelect == 0 ? Colors.white : Color(0xFF5CA767),
-                ),
-                onPressed: () => _OnTapIndex(0),
-                iconSize: 30,
-                padding: EdgeInsets.all(12.0),
-                splashRadius: 20.0,
-                splashColor: Colors.transparent,
-                constraints: BoxConstraints(),
-              ),
-            ),
-            // Bouton Historique
-            Container(
-              decoration: BoxDecoration(
-                color:
-                    _IndexSelect == 1 ? Color(0xFF5CA767) : Colors.transparent,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: Icon(
-                  Icons.update,
-                  color: _IndexSelect == 1 ? Colors.white : Color(0xFF5CA767),
-                ),
-                onPressed: () => _OnTapIndex(1),
-                iconSize: 30,
-                padding: EdgeInsets.all(12.0),
-                splashRadius: 20.0,
-                splashColor: Colors.transparent,
-                constraints: BoxConstraints(),
-              ),
-            ),
-            // Bouton User
-            Container(
-              decoration: BoxDecoration(
-                color:
-                    _IndexSelect == 2 ? Color(0xFF5CA767) : Colors.transparent,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: Icon(
-                  Icons.person,
-                  color: _IndexSelect == 2 ? Colors.white : Color(0xFF5CA767),
-                ),
-                onPressed: () => _OnTapIndex(2),
-                iconSize: 30,
-                padding: EdgeInsets.all(12.0),
-                splashRadius: 20.0,
-                splashColor: Colors.transparent,
-                constraints: BoxConstraints(),
-              ),
-            ),
-          ],
-        ),
-      ),
-      // fin AppBar De bas
     );
+  }
+
+  //***************************************
+  void _showForm() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Center(
+            child: Text('Le formulaire'),
+          ),
+          content: SingleChildScrollView(
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.4,
+              child: Form(
+                key: _formkey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 20),
+                    TextFormField(
+                      controller: _titlController,
+                      decoration: InputDecoration(
+                        labelText: 'Nom',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) => (value == null || value.isEmpty)
+                          ? 'Veuillez entrer un nom'
+                          : null,
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration: InputDecoration(
+                          labelText: 'Reponse ticket',
+                          border: OutlineInputBorder()),
+                      maxLines: 3,
+                      validator: (value) => (value == null || value.isEmpty)
+                          ? 'Veuillez entrer une reponse'
+                          : null,
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text("Annuler"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+                child: Text('Enregistrer'),
+                onPressed: () async {
+                  if (_formkey.currentState!.validate()) {
+                    await _reponseTicket();
+                  }
+                  ;
+                  Navigator.of(context)
+                      .pop(); // Fermer le dialogue après la soumission
+                }),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _reponseTicket() async {
+    try {
+      await FirebaseFirestore.instance.collection('ReonseTicket').add({
+        'title': _titlController.text,
+        'description': _descriptionController.text,
+        'createdAt': FieldValue.serverTimestamp(),
+        'status': 'Résolu',
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ticket répondu avec succès')),
+      );
+      _titlController.clear();
+      _descriptionController.clear();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur lors de la réponse au ticket')),
+      );
+    }
   }
 }

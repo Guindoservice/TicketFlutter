@@ -57,7 +57,7 @@ class _CatPratiqueState extends State<CatPratique> {
           },
         ),
         title: Text(
-          "Technique",
+          "Pratique",
           style: TextStyle(color: Color(0xFFFFFFFF)),
         ),
         centerTitle: true,
@@ -87,12 +87,24 @@ class _CatPratiqueState extends State<CatPratique> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     //Titre
-                    Text(
-                      "Titre du ticket",
-                      style: TextStyle(
-                          color: Color(0xFF312070),
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
+                    Row(
+                      children: <Widget>[
+                        Text(
+                          "Titre du ticket",
+                          style: TextStyle(
+                              color: Color(0xFF312070),
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Spacer(),
+                        Text(
+                          'EN_COURS',
+                          style: TextStyle(
+                              color: Colors.orange,
+                              fontSize: 17,
+                              fontStyle: FontStyle.italic),
+                        ),
+                      ],
                     ),
                     SizedBox(
                       height: 10,
@@ -101,6 +113,7 @@ class _CatPratiqueState extends State<CatPratique> {
                       "Desciption du ticket",
                       style: TextStyle(color: Color(0xFF312070), fontSize: 15),
                     ),
+
                     Align(
                       alignment: Alignment.bottomRight,
                       child: Text(
@@ -172,7 +185,7 @@ class _CatPratiqueState extends State<CatPratique> {
               ),
               child: IconButton(
                 icon: Icon(
-                  Icons.person,
+                  Icons.chat,
                   color: _IndexSelect == 2 ? Colors.white : Color(0xFF5CA767),
                 ),
                 onPressed: () => _OnTapIndex(2),
