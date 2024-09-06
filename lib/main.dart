@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         "/Formateur": (context) => Utilisateur(),
       },
       title: "Accueil",
-      home: Utilisateur(),
+      home: LoginPage(),
       theme: ThemeData(
           indicatorColor: Colors.white,
           colorScheme: ColorScheme.fromSeed(

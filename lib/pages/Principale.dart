@@ -109,7 +109,7 @@ class _PrincipaleState extends State<Principale> {
             apprenantData != null
                 ? "${apprenantData!['nom']} : ${apprenantData!['prenom']} :  ${apprenantData!['role']}"
                 : "Chargement...",
-            style: TextStyle(fontSize: 25, color: Color(0xFFFFFFFF)),
+            style: TextStyle(fontSize: 16, color: Color(0xFFFFFFFF)),
           ),
         ),
         //bouton pour afficher le pop des users
