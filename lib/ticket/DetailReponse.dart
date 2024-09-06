@@ -1,34 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class Detailticket extends StatefulWidget {
+class DetailReponse extends StatefulWidget {
   final String title;
   final String description;
-  final String id;
-  final String status;
-  const Detailticket({
+
+  const DetailReponse({
     super.key,
     required this.title,
     required this.description,
-    required this.id,
-    required this.status,
   });
 
   @override
-  State<Detailticket> createState() => _DetailticketState();
+  State<DetailReponse> createState() => _DetailticketState();
 }
 
-class _DetailticketState extends State<Detailticket> {
-  final _formkey = GlobalKey<FormState>();
-  final _titlController = TextEditingController();
-  final _descriptionController = TextEditingController();
-
-  @override
-  void initState() {
-    _titlController.text = widget.title;
-    super.initState();
-  }
-
+class _DetailticketState extends State<DetailReponse> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,12 +27,18 @@ class _DetailticketState extends State<Detailticket> {
             color: Color(0xFFFFFFFF),
           ),
           onPressed: () {
-            Navigator.popAndPushNamed(context, "/CateTechnique");
+            Navigator.pop(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DetailReponse(
+                          title: '',
+                          description: '',
+                        )));
           },
         ),
         title: Center(
           child: Text(
-            "Details Ticket",
+            "Details sur la réponse",
             style: TextStyle(color: Color(0xFFFFFFFF)),
           ),
         ),
@@ -56,7 +49,7 @@ class _DetailticketState extends State<Detailticket> {
           children: <Widget>[
             Center(
               child: Text(
-                "Ticket à répondre",
+                "La réponse du ticket",
                 style: TextStyle(fontSize: 32),
               ),
             ),
@@ -86,6 +79,9 @@ class _DetailticketState extends State<Detailticket> {
                     fontStyle: FontStyle.italic,
                     color: Color(0xFF000000)),
               ),
+            ),
+            SizedBox(
+              height: 20,
             ),
           ],
         ),

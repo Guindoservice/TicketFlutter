@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/rendering.dart';
@@ -5,8 +7,11 @@ import 'package:gestion_ticket/pages/ChatPage.dart';
 import 'package:gestion_ticket/pages/Historique.dart';
 import 'package:gestion_ticket/ticket/ReponseTicket.dart';
 
+import '../categorie/CatPedagogique.dart';
 import '../categorie/CatTechnique.dart';
+import '../categorie/CatTheorique.dart';
 import '../ticket/ListeNoRepondu.dart';
+import '../users/LoginPage.dart';
 
 class Principale extends StatefulWidget {
   const Principale({super.key});
@@ -40,14 +45,18 @@ class _PrincipaleState extends State<Principale> {
       case 2:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Chatpage()),
+          MaterialPageRoute(
+              builder: (context) => Chatpage(
+                    chatId: 'chatId',
+                  )),
         );
         break;
     }
   }
 
   void _Loginpage() {
-    Navigator.pushNamed(context, '/LoginPage');
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
 
   final List<String> listeImage = [
@@ -57,6 +66,30 @@ class _PrincipaleState extends State<Principale> {
     'assets/images/Online.png',
     'assets/images/home.png',
   ];
+// pour diviser la page entre les apprenants
+  User? user = FirebaseAuth.instance.currentUser;
+  Map<String, dynamic>? apprenantData;
+  @override
+  void initState() {
+    super.initState();
+    _getApprenantData();
+  }
+
+  Future<void> _getApprenantData() async {
+    if (user != null) {
+      DocumentSnapshot apprenantSnapshot = await FirebaseFirestore.instance
+          .collection('Utilisateur')
+          .doc(user!.uid)
+          .get();
+
+      if (apprenantSnapshot.exists) {
+        setState(() {
+          apprenantData = apprenantSnapshot.data() as Map<String, dynamic>;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,12 +101,14 @@ class _PrincipaleState extends State<Principale> {
             color: Color(0xFFFFFFFF),
           ),
           onPressed: () {
-            Navigator.popAndPushNamed(context, "/LoginPage");
+            _deconnection();
           },
         ),
         title: Center(
           child: Text(
-            "Catégorie",
+            apprenantData != null
+                ? "${apprenantData!['nom']} : ${apprenantData!['prenom']} :  ${apprenantData!['role']}"
+                : "Chargement...",
             style: TextStyle(fontSize: 25, color: Color(0xFFFFFFFF)),
           ),
         ),
@@ -206,7 +241,7 @@ class _PrincipaleState extends State<Principale> {
                 children: <Widget>[
                   ElevatedButton(
                       child: Text(
-                        "Liste Ticket",
+                        "Ticket à repondre",
                         style:
                             TextStyle(fontSize: 20, color: Color(0xFFFFFFFF)),
                       ),
@@ -218,12 +253,27 @@ class _PrincipaleState extends State<Principale> {
                             borderRadius: BorderRadius.circular(8),
                             // Coins arrondis
                           )),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Listenorepondu()),
-                        );
+                      onPressed: () async {
+                        //verifier le role de l'utilisateur'
+                        final user = FirebaseAuth.instance.currentUser;
+                        DocumentSnapshot userdoc = await FirebaseFirestore
+                            .instance
+                            .collection('Utilisateur')
+                            .doc(user?.uid)
+                            .get();
+                        final role = userdoc['role'];
+                        if (role == 'APPRENANT') {
+                          _ShowDialog(context);
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Listenorepondu(
+                                      description: '',
+                                      title: '',
+                                    )),
+                          );
+                        }
                       }),
                   // boutton 2 *********************************************************************************
                   SizedBox(
@@ -273,6 +323,7 @@ class _PrincipaleState extends State<Principale> {
                             MaterialPageRoute(
                                 builder: (context) => CateTechnique(
                                       id: '',
+                                      description: '',
                                     )));
                       }),
                   // boutton 2 *********************************************************************************
@@ -294,7 +345,13 @@ class _PrincipaleState extends State<Principale> {
                             // Coins arrondis
                           )),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/Catpedagogique');
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Catpedagogique(
+                                      id: '',
+                                      description: '',
+                                    )));
                       }),
                   SizedBox(
                     width: 12,
@@ -314,7 +371,11 @@ class _PrincipaleState extends State<Principale> {
                             // Coins arrondis
                           )),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/CatPratique');
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    CateTechnique(id: '', description: '')));
                       }),
                   // boutton 2 *********************************************************************************
                   SizedBox(
@@ -335,7 +396,12 @@ class _PrincipaleState extends State<Principale> {
                             // Coins arrondis
                           )),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/Cattheorique');
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Cattheorique(
+                                      description: '',
+                                    )));
                       }),
                 ],
               ),
@@ -427,6 +493,32 @@ class _PrincipaleState extends State<Principale> {
         ),
       ),
       // fin AppBar De bas
+    );
+  }
+
+  void _deconnection() {
+    FirebaseAuth.instance.signOut();
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => LoginPage()));
+  }
+
+  void _ShowDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Accès refusé"),
+          content: Text("Vous n'avez pas le droit d'accéder à cette page."),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

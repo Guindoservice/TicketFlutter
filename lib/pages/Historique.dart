@@ -23,19 +23,22 @@ class _CateTechniqueState extends State<Historique> {
       case 0:
         Navigator.pop(
           context,
-          MaterialPageRoute(builder: (context) => Historique()),
+          MaterialPageRoute(builder: (context) => Principale()),
         );
         break;
       case 1:
         Navigator.pop(
           context,
-          MaterialPageRoute(builder: (context) => Principale()),
+          MaterialPageRoute(builder: (context) => Historique()),
         );
         break;
       case 2:
         Navigator.pop(
           context,
-          MaterialPageRoute(builder: (context) => Chatpage()),
+          MaterialPageRoute(
+              builder: (context) => Chatpage(
+                    chatId: '',
+                  )),
         );
         break;
     }
@@ -139,15 +142,15 @@ class _CateTechniqueState extends State<Historique> {
             Container(
               decoration: BoxDecoration(
                 color:
-                    _IndexSelect == 1 ? Color(0xFF5CA767) : Colors.transparent,
+                    _IndexSelect == 0 ? Color(0xFF5CA767) : Colors.transparent,
                 shape: BoxShape.circle,
               ),
               child: IconButton(
                 icon: Icon(
                   Icons.home,
-                  color: _IndexSelect == 1 ? Colors.white : Color(0xFF5CA767),
+                  color: _IndexSelect == 0 ? Colors.white : Color(0xFF5CA767),
                 ),
-                onPressed: () => _OnTapIndex(1),
+                onPressed: () => _OnTapIndex(0),
                 iconSize: 30,
                 padding: EdgeInsets.all(12.0),
                 splashRadius: 20.0,
@@ -159,15 +162,15 @@ class _CateTechniqueState extends State<Historique> {
             Container(
               decoration: BoxDecoration(
                 color:
-                    _IndexSelect == 0 ? Color(0xFF5CA767) : Colors.transparent,
+                    _IndexSelect == 1 ? Color(0xFF5CA767) : Colors.transparent,
                 shape: BoxShape.circle,
               ),
               child: IconButton(
                 icon: Icon(
                   Icons.update,
-                  color: _IndexSelect == 0 ? Colors.white : Color(0xFF5CA767),
+                  color: _IndexSelect == 1 ? Colors.white : Color(0xFF5CA767),
                 ),
-                onPressed: () => _OnTapIndex(0),
+                onPressed: () => _OnTapIndex(1),
                 iconSize: 30,
                 padding: EdgeInsets.all(12.0),
                 splashRadius: 20.0,
@@ -179,15 +182,15 @@ class _CateTechniqueState extends State<Historique> {
             Container(
               decoration: BoxDecoration(
                 color:
-                    _IndexSelect == 1 ? Color(0xFF5CA767) : Colors.transparent,
+                    _IndexSelect == 2 ? Color(0xFF5CA767) : Colors.transparent,
                 shape: BoxShape.circle,
               ),
               child: IconButton(
                 icon: Icon(
                   Icons.chat,
-                  color: _IndexSelect == 1 ? Colors.white : Color(0xFF5CA767),
+                  color: _IndexSelect == 2 ? Colors.white : Color(0xFF5CA767),
                 ),
-                onPressed: () => _OnTapIndex(1),
+                onPressed: () => _OnTapIndex(2),
                 iconSize: 30,
                 padding: EdgeInsets.all(12.0),
                 splashRadius: 20.0,

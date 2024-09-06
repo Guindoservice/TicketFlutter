@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../ticket/DetailTicket.dart';
+
 class Cattheorique extends StatefulWidget {
-  const Cattheorique({super.key});
+  final String description;
+  const Cattheorique({super.key, required this.description});
 
   @override
   State<Cattheorique> createState() => _CattheoriqueState();
@@ -38,10 +42,6 @@ class _CattheoriqueState extends State<Cattheorique> {
     dateActuel = DateTime.now();
   }
 
-  void _navigateDetailTicket() {
-    Navigator.popAndPushNamed(context, '/Detailticket');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,62 +71,105 @@ class _CattheoriqueState extends State<Cattheorique> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: InkWell(
-            onTap: _navigateDetailTicket,
-            child: Card(
-              margin: EdgeInsets.all(16.0),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              elevation: 5,
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    //Titre
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          "Titre du ticket",
-                          style: TextStyle(
-                              color: Color(0xFF312070),
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('tickets')
+            .where('category', isEqualTo: 'THEORIQUE')
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Erreur de chargement des tickets'));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return Center(child: Text('Aucun ticket disponible'));
+          }
+
+          final tickets = snapshot.data!.docs;
+
+          return ListView.builder(
+            itemCount: tickets.length,
+            itemBuilder: (context, index) {
+              var ticket = tickets[index];
+              String truncatedDescription = ticket['description'].length > 50
+                  ? ticket['description'].substring(0, 50) + '...'
+                  : ticket['description'];
+
+              return InkWell(
+                onTap: () => _navigateDetailTicket(ticket),
+                child: Card(
+                  margin: EdgeInsets.all(16.0),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  elevation: 5,
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //Titre
+                        Row(
+                          children: <Widget>[
+                            Text(
+                              ticket['title'],
+                              style: TextStyle(
+                                  color: Color(0xFF312070),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Spacer(),
+                            Text(
+                              ticket['status'],
+                              style: TextStyle(
+                                  color: ticket['status'] == 'En attente'
+                                      ? Colors.orange
+                                      : ticket['status'] == 'En cours'
+                                          ? Colors.red
+                                          : Colors.green,
+                                  fontSize: 16,
+                                  fontStyle: FontStyle.italic),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.edit, color: Color(0xFF5AC767)),
+                              onPressed: () {},
+                            ),
+                            IconButton(
+                              icon:
+                                  Icon(Icons.delete, color: Color(0xFF312070)),
+                              onPressed: () {
+                                _ShowDeleteDialog(ticket.id);
+                              },
+                            ),
+                          ],
                         ),
-                        Spacer(),
+                        SizedBox(
+                          height: 10,
+                        ),
                         Text(
-                          'EN_COURS',
-                          style: TextStyle(
-                              color: Colors.orange,
-                              fontSize: 17,
-                              fontStyle: FontStyle.italic),
+                          truncatedDescription,
+                          style:
+                              TextStyle(color: Color(0xFF312070), fontSize: 15),
+                        ),
+
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Text(
+                            "${DateFormat('dd-MM-yyyy').format(ticket['createdAt'].toDate())}",
+                            style: TextStyle(color: Color(0xFF5CA767)),
+                          ),
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      "Desciption du ticket",
-                      style: TextStyle(color: Color(0xFF312070), fontSize: 15),
-                    ),
-
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Text(
-                        "${DateFormat('dd-MM-yyyy').format(dateActuel)}",
-                        style: TextStyle(color: Color(0xFF5CA767)),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ),
-        ),
+              );
+            },
+          );
+        },
       ),
       //la appbar de bas
       bottomNavigationBar: BottomAppBar(
@@ -200,6 +243,72 @@ class _CattheoriqueState extends State<Cattheorique> {
         ),
       ),
       // fin AppBar De bas
+    );
+  }
+
+  Future<void> _navigateDetailTicket(DocumentSnapshot ticket) async {
+    //mettre en cours le statut du ticket
+    await FirebaseFirestore.instance
+        .collection('tickets')
+        .doc(ticket.id)
+        .update({'status': 'En cours'});
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Detailticket(
+          title: ticket['title'],
+          description: ticket['description'],
+          id: ticket.id,
+          status: '',
+        ),
+      ),
+    );
+  }
+
+  // pour supprimer un ticket
+  Future<void> _deleteTicket(String id) async {
+    try {
+      await FirebaseFirestore.instance.collection('tickets').doc(id).delete();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Ticket supprimé avec succès'),
+          backgroundColor: Color(0xFF5CA767),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur lors de la suppression du ticket'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _ShowDeleteDialog(String id) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: const Text('Êtes-vous sûr de vouloir supprimer ce ticket ?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Annuler'),
+            ),
+            TextButton(
+              child: Text('Supprimer'),
+              onPressed: () async {
+                await _deleteTicket(id);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

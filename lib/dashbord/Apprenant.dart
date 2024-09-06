@@ -159,67 +159,62 @@ class _DashbordState extends State<Apprenant> {
       ),
       appBar: AppBar(
         backgroundColor: Color(0xFF5CA767),
-        title:  Row(
-                children: <Widget>[
-                  Container(
-                    width: 50,
-                    height: 50,
-                    child: Image.asset("assets/images/logoTicke.png"),
-                    decoration: BoxDecoration(
-                      color: Color(0xFFFFFFFF),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
-                  ),
-                  IconButton(
-                      icon: Icon(Icons.home, color: Color(0xFFFFFFFF)),
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/Accueil');
-                      }),
-                  Text('Accueil', style: TextStyle(color: Color(0xFFFFFFFF))),
-                  SizedBox(width: 10),
-                  IconButton(
-                      icon: Icon(Icons.person, color: Color(0xFFFFFFFF)),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Apprenant()),
-                        );
-                      }),
-                  Text('Formateur', style: TextStyle(color: Color(0xFFFFFFFF))),
-                  SizedBox(width: 10),
-                  IconButton(
-                      icon: Icon(Icons.category, color: Color(0xFFFFFFFF)),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Categorie()),
-                        );
-                      }),
-                  Text('Catégorie', style: TextStyle(color: Color(0xFFFFFFFF))),
-                  SizedBox(width: 10),
-                  IconButton(
-                      icon: Icon(Icons.update, color: Color(0xFFFFFFFF)),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Historiques()),
-                        );
-                      }),
-                  Text('Historique',
-                      style: TextStyle(color: Color(0xFFFFFFFF))),
-                  SizedBox(width: 10),
-                  Spacer(),
-
-                  IconButton(
-                    icon: Icon(Icons.search,
-                        color: Color(0xFFFFFFFF)),
-                    onPressed: () {},
-                  ),
-                ],
-              )
-
+        title: Row(
+          children: <Widget>[
+            Container(
+              width: 50,
+              height: 50,
+              child: Image.asset("assets/images/logoTicke.png"),
+              decoration: BoxDecoration(
+                color: Color(0xFFFFFFFF),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white, width: 2),
+              ),
+            ),
+            IconButton(
+                icon: Icon(Icons.home, color: Color(0xFFFFFFFF)),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/Accueil');
+                }),
+            Text('Accueil', style: TextStyle(color: Color(0xFFFFFFFF))),
+            SizedBox(width: 10),
+            IconButton(
+                icon: Icon(Icons.person, color: Color(0xFFFFFFFF)),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Apprenant()),
+                  );
+                }),
+            Text('Formateur', style: TextStyle(color: Color(0xFFFFFFFF))),
+            SizedBox(width: 10),
+            IconButton(
+                icon: Icon(Icons.category, color: Color(0xFFFFFFFF)),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Categorie()),
+                  );
+                }),
+            Text('Catégorie', style: TextStyle(color: Color(0xFFFFFFFF))),
+            SizedBox(width: 10),
+            IconButton(
+                icon: Icon(Icons.update, color: Color(0xFFFFFFFF)),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Historiques()),
+                  );
+                }),
+            Text('Historique', style: TextStyle(color: Color(0xFFFFFFFF))),
+            SizedBox(width: 10),
+            Spacer(),
+            IconButton(
+              icon: Icon(Icons.search, color: Color(0xFFFFFFFF)),
+              onPressed: () {},
+            ),
+          ],
+        ),
       ),
     );
   }

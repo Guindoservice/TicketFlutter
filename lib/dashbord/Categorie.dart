@@ -3,6 +3,9 @@ import 'package:gestion_ticket/dashbord/Apprenant.dart';
 import 'package:gestion_ticket/dashbord/Utilisateur.dart';
 import 'package:gestion_ticket/dashbord/Historiques.dart';
 
+import '../pages/Principale.dart';
+import 'Accueil.dart';
+
 class Categorie extends StatefulWidget {
   const Categorie({super.key});
 
@@ -36,99 +39,112 @@ class _DashbordState extends State<Categorie> {
                       width: 2,
                     ),
                   )),
-              IconButton(
-                  icon: Icon(
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Dashbord()),
+                  );
+                },
+                child: Row(children: <Widget>[
+                  Icon(
                     Icons.home,
                     color: Color(0xFFFFFFFF),
                   ),
-                  onPressed: () {
-                    Navigator.pushNamed(context, 'Accueil');
-                  }),
-              Text(
-                'Accueil',
-                style: TextStyle(
-                  color: Color(0xFFFFFFFF),
-                ),
+                  Text(
+                    'Accueil',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
               ),
               SizedBox(
                 width: 10,
               ),
-              IconButton(
-                  icon: Icon(
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Utilisateur()),
+                  );
+                },
+                child: Row(children: <Widget>[
+                  Icon(
                     Icons.person,
                     color: Color(0xFFFFFFFF),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Utilisateur()),
-                    );
-                  }),
-              Text(
-                'Formateur',
-                style: TextStyle(
-                  color: Color(0xFFFFFFFF),
-                ),
+                  Text(
+                    'Utiisateurs',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
               ),
               SizedBox(
                 width: 10,
               ),
-              IconButton(
-                  icon: Icon(
-                    Icons.person,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Utilisateur()),
+                  );
+                },
+                child: Row(children: <Widget>[
+                  Icon(
+                    Icons.messenger_outline,
                     color: Color(0xFFFFFFFF),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Apprenant()),
-                    );
-                  }),
-              Text(
-                'Apprenant',
-                style: TextStyle(
-                  color: Color(0xFFFFFFFF),
-                ),
+                  Text(
+                    'Ticket',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
               ),
               SizedBox(
                 width: 10,
               ),
-              IconButton(
-                  icon: Icon(
+              GestureDetector(
+                onTap: () {},
+                child: Row(children: <Widget>[
+                  Icon(
                     Icons.category,
                     color: Color(0xFFFFFFFF),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Categorie()),
-                    );
-                  }),
-              Text(
-                'Catégorie',
-                style: TextStyle(
-                  color: Color(0xFFFFFFFF),
-                ),
+                  Text(
+                    'Catégorie',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
               ),
               SizedBox(
                 width: 10,
               ),
-              IconButton(
-                  icon: Icon(
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Historiques()),
+                  );
+                },
+                child: Row(children: <Widget>[
+                  Icon(
                     Icons.update,
                     color: Color(0xFFFFFFFF),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Historiques()),
-                    );
-                  }),
-              Text(
-                'Historique',
-                style: TextStyle(
-                  color: Color(0xFFFFFFFF),
-                ),
+                  Text(
+                    'Historique',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
               ),
               SizedBox(
                 width: 10,

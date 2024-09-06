@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gestion_ticket/dashbord/Accueil.dart';
+import 'package:gestion_ticket/pages/Principale.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -11,17 +14,42 @@ class _LoginPageState extends State<LoginPage> {
   final _password = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _masquePassword = true;
+  String? _roles;
   Future<void> _connect() async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _email.text,
         password: _password.text,
       );
-      // Connexion réussie, naviguer vers la page principale
-      Navigator.popAndPushNamed(context, "/Principale");
+      // reccuperer le role de l'utilisateur conecter'
+      User? user = userCredential.user;
+      if (user != null) {
+        _getUserRole(user.uid);
+      }
     } catch (e) {
       // Afficher un message d'erreur à l'utilisateur
-      print('Erreur de connexion : $e');
+      _showErrorDialog(e.toString());
+    }
+  }
+
+  Future<void> _getUserRole(String uid) async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('Utilisateur')
+          .doc(uid)
+          .get();
+      String? role = snapshot['role'];
+      if (role == 'ADMIN') {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => Dashbord()));
+      } else if (role == 'FORMATEUR' || role == 'APPRENANT') {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => Principale()));
+      } else {
+        _showErrorDialog(
+            "Vous n'avez pas le droit d'acceder à cette application");
+      }
+    } catch (e) {
       _showErrorDialog(e.toString());
     }
   }
@@ -30,8 +58,8 @@ class _LoginPageState extends State<LoginPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Erreur'),
-        content: Text(message),
+        title: Text('Erreur !'),
+        content: Text("Veillez verifier votre email ou mot de passe"),
         actions: [
           TextButton(
             child: Text('OK'),
@@ -98,8 +126,8 @@ class _LoginPageState extends State<LoginPage> {
                   suffixIcon: IconButton(
                       icon: Icon(
                         _masquePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                         color: Color(0xFF312070),
                       ),
                       onPressed: () {

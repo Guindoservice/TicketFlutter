@@ -1,8 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gestion_ticket/dashbord/Apprenant.dart';
 import 'package:gestion_ticket/dashbord/Categorie.dart';
 import 'package:gestion_ticket/dashbord/Utilisateur.dart';
 import 'package:gestion_ticket/dashbord/Historiques.dart';
+import 'package:gestion_ticket/pages/Homepage.dart';
+import 'package:gestion_ticket/pages/Principale.dart';
+
+import '../users/LoginPage.dart';
 
 class Dashbord extends StatefulWidget {
   const Dashbord({super.key});
@@ -17,9 +22,11 @@ class _DashbordState extends State<Dashbord> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF5CA767),
-        title: Row(
-          children: <Widget>[
-            Container(
+        title: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: <Widget>[
+              Container(
                 width: 50,
                 height: 50,
                 child: Image.asset(
@@ -32,105 +39,134 @@ class _DashbordState extends State<Dashbord> {
                     color: Colors.white, // Couleur de la bordure
                     width: 2,
                   ),
-                )),
-            IconButton(
-                icon: Icon(
-                  Icons.home,
-                  color: Color(0xFFFFFFFF),
                 ),
-                onPressed: () {}),
-            Text(
-              'Accueil',
-              style: TextStyle(
-                color: Color(0xFFFFFFFF),
               ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            IconButton(
-                icon: Icon(
-                  Icons.person,
-                  color: Color(0xFFFFFFFF),
-                ),
-                onPressed: () {
+              GestureDetector(
+                onTap: () {
+                  // Retour à l'accueil au lieu d'une boucle infinie
+                  Navigator.pop(context);
+                },
+                child: Row(children: <Widget>[
+                  Icon(
+                    Icons.home,
+                    color: Color(0xFFFFFFFF),
+                  ),
+                  Text(
+                    'Accueil',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
+              ),
+              SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Utilisateur()),
                   );
-                }),
-            Text(
-              'Formateur',
-              style: TextStyle(
-                color: Color(0xFFFFFFFF),
+                },
+                child: Row(children: <Widget>[
+                  Icon(
+                    Icons.person,
+                    color: Color(0xFFFFFFFF),
+                  ),
+                  Text(
+                    'Utilisateurs',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
               ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            IconButton(
-                icon: Icon(
-                  Icons.person,
-                  color: Color(0xFFFFFFFF),
-                ),
-                onPressed: () {
+              SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Apprenant()),
                   );
-                }),
-            Text(
-              'Apprenant',
-              style: TextStyle(
-                color: Color(0xFFFFFFFF),
+                },
+                child: Row(children: <Widget>[
+                  Icon(
+                    Icons.messenger_outline,
+                    color: Color(0xFFFFFFFF),
+                  ),
+                  Text(
+                    'Ticket',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
               ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            IconButton(
-                icon: Icon(
-                  Icons.category,
-                  color: Color(0xFFFFFFFF),
-                ),
-                onPressed: () {
+              SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Categorie()),
+                    MaterialPageRoute(builder: (context) => Principale()),
                   );
-                }),
-            Text(
-              'Catégorie',
-              style: TextStyle(
-                color: Color(0xFFFFFFFF),
+                },
+                child: Row(children: <Widget>[
+                  Icon(
+                    Icons.category,
+                    color: Color(0xFFFFFFFF),
+                  ),
+                  Text(
+                    'Catégorie',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
               ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            IconButton(
-                icon: Icon(
-                  Icons.update,
-                  color: Color(0xFFFFFFFF),
-                ),
-                onPressed: () {
+              SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Historiques()),
                   );
-                }),
-            Text(
-              'Historique',
-              style: TextStyle(
-                color: Color(0xFFFFFFFF),
+                },
+                child: Row(children: <Widget>[
+                  Icon(
+                    Icons.update,
+                    color: Color(0xFFFFFFFF),
+                  ),
+                  Text(
+                    'Historique',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
               ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-          ],
+              SizedBox(width: 10),
+              // IconButton de déconnexion
+              IconButton(
+                icon: Icon(Icons.logout, color: Color(0xFFFFFFFF)),
+                onPressed: () {
+                  _deconnection();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: Center(
+        child: Text(
+          'Contenu principal du tableau de bord',
+          style: TextStyle(fontSize: 20),
         ),
       ),
     );
+  }
+
+  void _deconnection() {
+    FirebaseAuth.instance.signOut();
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
 }

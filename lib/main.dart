@@ -7,6 +7,7 @@ import 'package:gestion_ticket/pages/Historique.dart';
 import 'package:gestion_ticket/pages/Homepage.dart';
 import 'package:gestion_ticket/pages/Principale.dart';
 import 'package:gestion_ticket/pages/User.dart';
+import 'package:gestion_ticket/ticket/DetailReponse.dart';
 import 'package:gestion_ticket/ticket/DetailTicket.dart';
 import 'package:gestion_ticket/ticket/ListeNoRepondu.dart';
 import 'package:gestion_ticket/ticket/ReponseTicket.dart';
@@ -38,23 +39,15 @@ class MyApp extends StatelessWidget {
         "/Homepage": (context) => Homepage(),
         "/LoginPage": (context) => LoginPage(),
         "/Principale": (context) => Principale(),
-        //  "/Historique": (context) => Historique(),
-        // "/ChatPage": (context) => Chatpage(),
         "/User": (context) => User(),
         "/Apprenantform": (context) => Apprenantform(),
-        //  "/CateTechnique": (context) => CateTechnique(),
-        "/CatPratique": (context) => CatPratique(),
-        "/Catpedagogique": (context) => Catpedagogique(),
-        "/Cattheorique": (context) => Cattheorique(),
-        //"/Detailticket": (context) => Detailticket(),
         "/Formateurform": (context) => Formateurform(),
         "/Reponseticket": (context) => Reponseticket(),
-        //"/Listenorepondu": (context) => Listenorepondu(),
         "/Dashbord": (context) => Dashbord(),
         "/Formateur": (context) => Utilisateur(),
       },
       title: "Accueil",
-      home: Dashbord(),
+      home: Utilisateur(),
       theme: ThemeData(
           indicatorColor: Colors.white,
           colorScheme: ColorScheme.fromSeed(

@@ -1,43 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-//import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_ticket/dashbord/Apprenant.dart';
-import 'package:gestion_ticket/dashbord/Categorie.dart';
 import 'package:gestion_ticket/dashbord/Historiques.dart';
+import 'package:gestion_ticket/pages/ChatPage.dart';
+
+import '../pages/Principale.dart';
+import 'Accueil.dart';
 
 class Utilisateur extends StatefulWidget {
-  const Utilisateur({super.key});
+  const Utilisateur({Key? key}) : super(key: key);
 
   @override
-  State<Utilisateur> createState() => _DashbordState();
+  State<Utilisateur> createState() => _UtilisateurState();
 }
 
-class _DashbordState extends State<Utilisateur> {
-  // les attribut du formulaire
-  //final TextEditingController _photo = TextEditingController();
+class _UtilisateurState extends State<Utilisateur> {
+  // Les attributs du formulaire
   final TextEditingController _nom = TextEditingController();
   final TextEditingController _prenom = TextEditingController();
   final TextEditingController _contact = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  final TextEditingController _formation = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final _formkey = GlobalKey<FormState>();
-  String? _selcteRole;
-  bool _isSubmitting = true;
-  final List<String> _role = ['FORMATEUR', 'APPRENANT '];
-  /*Future<void> _selectFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-    );
-    if (result != null) {
-      String filePath = result.files.single.path ?? '';
-      setState(() {
-        _photo.text = filePath;
-      });
-    }
-  } */
+  final _formKey = GlobalKey<FormState>();
+  bool _masquePassword = true;
+  String? _selectedRole;
+  final List<String> _roles = ['FORMATEUR', 'ADMIN', 'APPRENANT'];
+
   Future<void> _creeUser() async {
     try {
       UserCredential userCredential =
@@ -45,31 +36,33 @@ class _DashbordState extends State<Utilisateur> {
         email: _email.text,
         password: _password.text,
       );
+
       String userId = userCredential.user!.uid;
       await _firestore.collection('Utilisateur').doc(userId).set({
         'nom': _nom.text,
         'prenom': _prenom.text,
         'contact': _contact.text,
         'email': _email.text,
-        'password': _password.text,
-        'role': _selcteRole,
+        'formation': _formation.text,
+        'role': _selectedRole,
       });
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Utilisateur créé avec succès'),
-        ),
+        SnackBar(content: Text('Utilisateur créé avec succès')),
       );
+
+      // Nettoyer les champs
       _nom.clear();
       _prenom.clear();
       _contact.clear();
       _email.clear();
       _password.clear();
-      _selcteRole = null;
+      _formation.clear();
+      _selectedRole = null;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erreur lors de la création de l\'utilisateur: $e'),
-        ),
+            content: Text('Erreur lors de la création de l\'utilisateur: $e')),
       );
     }
   }
@@ -79,9 +72,11 @@ class _DashbordState extends State<Utilisateur> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF5CA767),
-        title: Row(
-          children: <Widget>[
-            Container(
+        title: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: <Widget>[
+              Container(
                 width: 50,
                 height: 50,
                 child: Image.asset(
@@ -94,105 +89,119 @@ class _DashbordState extends State<Utilisateur> {
                     color: Colors.white, // Couleur de la bordure
                     width: 2,
                   ),
-                )),
-            IconButton(
-                icon: Icon(
-                  Icons.home,
-                  color: Color(0xFFFFFFFF),
                 ),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/Accueil');
-                }),
-            Text(
-              'Accueil',
-              style: TextStyle(
-                color: Color(0xFFFFFFFF),
               ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            IconButton(
-                icon: Icon(
-                  Icons.person,
-                  color: Color(0xFFFFFFFF),
-                ),
-                onPressed: () {
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Dashbord()),
+                  );
+                },
+                child: Row(children: <Widget>[
+                  Icon(
+                    Icons.home,
+                    color: Color(0xFFFFFFFF),
+                  ),
+                  Text(
+                    'Accueil',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
+              ),
+              SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Utilisateur()),
                   );
-                }),
-            Text(
-              'Utilisateur',
-              style: TextStyle(
-                color: Color(0xFFFFFFFF),
+                },
+                child: Row(children: <Widget>[
+                  Icon(
+                    Icons.person,
+                    color: Color(0xFFFFFFFF),
+                  ),
+                  Text(
+                    'Utilisateurs',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
               ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            IconButton(
-                icon: Icon(
-                  Icons.person,
-                  color: Color(0xFFFFFFFF),
-                ),
-                onPressed: () {
+              SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Apprenant()),
+                    MaterialPageRoute(
+                        builder: (context) => Chatpage(
+                              chatId: '',
+                            )),
                   );
-                }),
-            Text(
-              'Apprenant',
-              style: TextStyle(
-                color: Color(0xFFFFFFFF),
+                },
+                child: Row(children: <Widget>[
+                  Icon(
+                    Icons.messenger_outline,
+                    color: Color(0xFFFFFFFF),
+                  ),
+                  Text(
+                    'Ticket',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
               ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            IconButton(
-                icon: Icon(
-                  Icons.category,
-                  color: Color(0xFFFFFFFF),
-                ),
-                onPressed: () {
+              SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Categorie()),
+                    MaterialPageRoute(builder: (context) => Principale()),
                   );
-                }),
-            Text(
-              'Catégorie',
-              style: TextStyle(
-                color: Color(0xFFFFFFFF),
+                },
+                child: Row(children: <Widget>[
+                  Icon(
+                    Icons.category,
+                    color: Color(0xFFFFFFFF),
+                  ),
+                  Text(
+                    'Catégorie',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
               ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            IconButton(
-                icon: Icon(
-                  Icons.update,
-                  color: Color(0xFFFFFFFF),
-                ),
-                onPressed: () {
+              SizedBox(width: 10),
+              GestureDetector(
+                onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Historiques()),
                   );
-                }),
-            Text(
-              'Historique',
-              style: TextStyle(
-                color: Color(0xFFFFFFFF),
+                },
+                child: Row(children: <Widget>[
+                  Icon(
+                    Icons.update,
+                    color: Color(0xFFFFFFFF),
+                  ),
+                  Text(
+                    'Historique',
+                    style: TextStyle(
+                      color: Color(0xFFFFFFFF),
+                    ),
+                  ),
+                ]),
               ),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-          ],
+              SizedBox(width: 10),
+              // IconButton de déconnexion
+            ],
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -210,81 +219,81 @@ class _DashbordState extends State<Utilisateur> {
                   ),
                   Spacer(),
                   ElevatedButton(
-                    onPressed: () {
-                      _showForm();
-                    },
-                    child: Text(
-                      "Nouveau",
-                      style: TextStyle(fontSize: 20),
-                    ),
+                    onPressed: _showForm,
+                    child: Text("Nouveau", style: TextStyle(fontSize: 20)),
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Color(0xFFFFFFFF),
+                      foregroundColor: Colors.white,
                       backgroundColor: Color(0xFF5AC767),
                       padding:
                           EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
+                          borderRadius: BorderRadius.circular(5)),
                     ),
                   ),
                 ],
               ),
-              width: double
-                  .infinity, // Utilisez double.infinity pour que le conteneur prenne toute la largeur disponible
+              width: double.infinity,
               height: 50,
               margin: EdgeInsets.only(top: 10, left: 10),
               decoration: BoxDecoration(
                 border: Border(
-                  bottom: BorderSide(
-                    color: Color(0xFF312070),
-                    width: 4,
-                  ),
-                ),
+                    bottom: BorderSide(color: Color(0xFF312070), width: 4)),
               ),
             ),
-            SizedBox(height: 20), // Espace entre le conteneur et le tableau
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(10),
-              child: DataTable(
-                columns: const <DataColumn>[
-                  // DataColumn(label: Text("Photo")),
-                  DataColumn(label: Text("Nom")),
-                  DataColumn(label: Text("Prenom")),
-                  DataColumn(label: Text("Contact")),
-                  DataColumn(label: Text("Email")),
-                  DataColumn(label: Text("Mot de passe")),
-                  DataColumn(label: Text("Action")),
-                ],
-                rows: <DataRow>[
-                  DataRow(cells: <DataCell>[
-                    // DataCell(Image.asset('assets/images/abblo.png', width: 40, height: 40)),
-                    DataCell(Text("Celina")),
-                    DataCell(Text("Diarra")),
-                    DataCell(Text("76541123")),
-                    DataCell(Text("celina@gmail.com")),
-                    DataCell(Text("*******")),
-                    DataCell(Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            Icons.edit,
-                            color: Color(0xFF5AC767),
-                          ),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.delete,
-                            color: Color(0xFF312070),
-                          ),
-                          onPressed: () {},
-                        )
-                      ],
-                    )),
-                  ]),
-                ],
-              ),
+            SizedBox(height: 20),
+            StreamBuilder<QuerySnapshot>(
+              stream: _firestore.collection('Utilisateur').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text('Erreur de récupération des utilisateurs');
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
+                final utilisateurs = snapshot.data!.docs;
+                return Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(10),
+                  child: DataTable(
+                    columns: const <DataColumn>[
+                      DataColumn(label: Text("Nom")),
+                      DataColumn(label: Text("Prenom")),
+                      DataColumn(label: Text("Contact")),
+                      DataColumn(label: Text("Email")),
+                      DataColumn(label: Text("Formation")),
+                      DataColumn(label: Text("Rôle")),
+                      DataColumn(label: Text("Action")),
+                    ],
+                    rows: utilisateurs.map((user) {
+                      return DataRow(cells: [
+                        DataCell(Text(user['nom'])),
+                        DataCell(Text(user['prenom'])),
+                        DataCell(Text(user['contact'])),
+                        DataCell(Text(user['email'])),
+                        DataCell(Text(user['formation'])),
+                        DataCell(Text(user['role'])),
+                        DataCell(Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit, color: Color(0xFF5AC767)),
+                              onPressed: () {
+                                // Action pour éditer l'utilisateur
+                              },
+                            ),
+                            IconButton(
+                              icon:
+                                  Icon(Icons.delete, color: Color(0xFF312070)),
+                              onPressed: () {
+                                // Action pour supprimer l'utilisateur
+                              },
+                            )
+                          ],
+                        )),
+                      ]);
+                    }).toList(),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -292,20 +301,17 @@ class _DashbordState extends State<Utilisateur> {
     );
   }
 
-  // la fonction pour ouvrir le dialog messeage
   void _showForm() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Center(
-            child: Text('Le formulaire'),
-          ),
+          title: Center(child: Text('Le formulaire')),
           content: SingleChildScrollView(
             child: Container(
               width: MediaQuery.of(context).size.width * 0.4,
               child: Form(
-                key: _formkey,
+                key: _formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -362,25 +368,48 @@ class _DashbordState extends State<Utilisateur> {
                     SizedBox(height: 20),
                     TextFormField(
                       controller: _password,
-                      obscureText: true, // Masquer le mot de passe
+                      obscureText: _masquePassword,
                       decoration: InputDecoration(
                         labelText: 'Mot de passe',
                         border: OutlineInputBorder(),
+                        suffixIcon: IconButton(
+                            icon: Icon(
+                              _masquePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: Color(0xFF312070),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _masquePassword = !_masquePassword;
+                              });
+                            }),
                       ),
                       validator: (value) => (value == null || value.isEmpty)
                           ? 'Veuillez entrer un mot de passe'
                           : null,
                     ),
                     SizedBox(height: 20),
+                    TextFormField(
+                      controller: _formation,
+                      decoration: InputDecoration(
+                        labelText: 'Fomation',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) => (value == null || value.isEmpty)
+                          ? 'Veuillez entrer une fomation'
+                          : null,
+                    ),
+                    SizedBox(height: 20),
                     DropdownButtonFormField<String>(
-                      value: _selcteRole,
+                      value: _selectedRole,
                       hint: Text('Choisissez le Rôle'),
-                      items: _role
-                          .map((category) => DropdownMenuItem(
-                              value: category, child: Text(category)))
+                      items: _roles
+                          .map((role) =>
+                              DropdownMenuItem(value: role, child: Text(role)))
                           .toList(),
                       onChanged: (newValue) =>
-                          setState(() => _selcteRole = newValue),
+                          setState(() => _selectedRole = newValue),
                       validator: (value) =>
                           (value == null) ? 'Veuillez choisir un rôle' : null,
                       decoration: InputDecoration(
@@ -396,14 +425,12 @@ class _DashbordState extends State<Utilisateur> {
           actions: [
             TextButton(
               child: Text("Annuler"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
             ),
             ElevatedButton(
               child: Text('Enregistrer'),
               onPressed: () {
-                if (_formkey.currentState!.validate()) {
+                if (_formKey.currentState!.validate()) {
                   _creeUser();
                   Navigator.of(context)
                       .pop(); // Fermer le dialogue après la soumission

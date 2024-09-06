@@ -1,205 +1,179 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gestion_ticket/pages/Principale.dart';
-import 'package:intl/intl.dart';
-
-import 'Historique.dart';
+import 'package:flutter/services.dart';
 
 class Chatpage extends StatefulWidget {
-  const Chatpage({super.key});
+  final String chatId; // ID de la conversation
+  const Chatpage({super.key, required this.chatId});
 
   @override
-  State<Chatpage> createState() => _CateTechniqueState();
+  State<Chatpage> createState() => _ChatPageState();
 }
 
-class _CateTechniqueState extends State<Chatpage> {
-  int _IndexSelect = 0;
-
-  void _OnTapIndex(int index) {
-    setState(() {
-      _IndexSelect = index;
-    });
-
-    // Navigation vers la page correspondante
-    switch (index) {
-      case 0:
-        Navigator.pop(
-          context,
-          MaterialPageRoute(builder: (context) => Chatpage()),
-        );
-        break;
-      case 1:
-        Navigator.pop(
-          context,
-          MaterialPageRoute(builder: (context) => Historique()),
-        );
-        break;
-      case 2:
-        Navigator.pop(
-          context,
-          MaterialPageRoute(builder: (context) => Principale()),
-        );
-        break;
-    }
-  }
-
-  late DateTime dateActuel;
+class _ChatPageState extends State<Chatpage> {
+  final _chatController = TextEditingController();
+  late DateTime _currentDateTime;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
     super.initState();
-    dateActuel = DateTime.now();
-  }
-
-  void _navigateDetailTicket() {
-    Navigator.popAndPushNamed(context, '/Detailticket');
+    _currentDateTime = DateTime.now();
   }
 
   @override
   Widget build(BuildContext context) {
-    final _recherche;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF5CA767),
         leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Color(0xFFFFFFFF),
-          ),
+          icon: Icon(Icons.arrow_back, color: Color(0xFFFFFFFF)),
           onPressed: () {
-            Navigator.popAndPushNamed(context, "/Principale");
+            Navigator.pop(context); // Retour à la page précédente
           },
         ),
-        title: Text(
-          "Discussion",
-          style: TextStyle(color: Color(0xFFFFFFFF)),
-        ),
+        title: Text("Discussion", style: TextStyle(color: Color(0xFFFFFFFF))),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.search,
-              color: Color(0xFFFFFFFF),
-            ),
-            onPressed: () {},
+            icon: Icon(Icons.delete, color: Color(0xFFFFFFFF)),
+            onPressed: () {
+              // Ajoutez ici la logique pour supprimer la conversation
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.phone, color: Color(0xFFFFFFFF)),
+            onPressed: () {
+              // Ajoutez ici la logique pour supprimer la conversation
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.camera, color: Color(0xFFFFFFFF)),
+            onPressed: () {
+              // Ajoutez ici la logique pour supprimer la conversation
+            },
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: InkWell(
-            onTap: _navigateDetailTicket,
-            child: Card(
-              margin: EdgeInsets.all(16.0),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              elevation: 5,
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection("conversations")
+            .doc(widget.chatId)
+            .collection("messages")
+            .orderBy("CreatAt")
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshots) {
+          if (snapshots.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshots.hasError) {
+            return Center(child: Text("Erreur de chargement des messages"));
+          }
+          if (!snapshots.hasData || snapshots.data!.docs.isEmpty) {
+            return Center(child: Text("Aucun message disponible"));
+          }
+          final messages = snapshots.data!.docs;
+          return ListView.builder(
+            itemCount: messages.length,
+            itemBuilder: (context, index) {
+              var message = messages[index];
+              Timestamp timestamp = message['CreatAt'];
+              DateTime messageTime = timestamp.toDate();
+              return Container(
+                margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Color(0xFFDFF2FF),
+                ),
+                child: Row(
                   children: [
-                    //Titre
-                    Text(
-                      "Titre du ticket",
-                      style: TextStyle(
-                          color: Color(0xFF312070),
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
+                    Expanded(
+                      child: Text(
+                        message['text'],
+                        softWrap: true,
+                        style:
+                            TextStyle(fontSize: 15, color: Color(0xFF312070)),
+                      ),
                     ),
                     SizedBox(
-                      height: 10,
+                      width: 20,
                     ),
                     Text(
-                      "Desciption du ticket",
-                      style: TextStyle(color: Color(0xFF312070), fontSize: 15),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Text(
-                        "${DateFormat('dd-MM-yyyy').format(dateActuel)}",
-                        style: TextStyle(color: Color(0xFF5CA767)),
-                      ),
+                      '${messageTime.hour}:${messageTime.minute.toString().padLeft(2, '0')}',
+                      style: TextStyle(fontSize: 10, color: Color(0xFF000000)),
                     ),
                   ],
                 ),
-              ),
-            ),
-          ),
-        ),
+              );
+            },
+          );
+        },
       ),
-      //la appbar de bas
       bottomNavigationBar: BottomAppBar(
         color: Color(0xFFFFFFFF),
-        shape: CircularNotchedRectangle(),
-        notchMargin: 8.0,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            // Bouton Home
-            Container(
-              decoration: BoxDecoration(
-                color:
-                    _IndexSelect == 2 ? Color(0xFF5CA767) : Colors.transparent,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: Icon(
-                  Icons.home,
-                  color: _IndexSelect == 2 ? Colors.white : Color(0xFF5CA767),
+            Expanded(
+              child: TextField(
+                controller: _chatController,
+                decoration: InputDecoration(
+                  hintText: "Tapez votre message",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                    borderSide: BorderSide(color: Color(0xFF5CA767)),
+                  ),
                 ),
-                onPressed: () => _OnTapIndex(2),
-                iconSize: 30,
-                padding: EdgeInsets.all(12.0),
-                splashRadius: 20.0,
-                splashColor: Colors.transparent,
-                constraints: BoxConstraints(),
+                inputFormatters: [LengthLimitingTextInputFormatter(150)],
               ),
             ),
-            // Bouton Historique
+            SizedBox(width: 5),
             Container(
-              decoration: BoxDecoration(
-                color:
-                    _IndexSelect == 1 ? Color(0xFF5CA767) : Colors.transparent,
-                shape: BoxShape.circle,
-              ),
               child: IconButton(
-                icon: Icon(
-                  Icons.update,
-                  color: _IndexSelect == 1 ? Colors.white : Color(0xFF5CA767),
-                ),
-                onPressed: () => _OnTapIndex(1),
-                iconSize: 30,
-                padding: EdgeInsets.all(12.0),
-                splashRadius: 20.0,
-                splashColor: Colors.transparent,
-                constraints: BoxConstraints(),
+                icon: Icon(Icons.send, size: 30, color: Color(0xFFFFFFFF)),
+                onPressed: _sendMessage,
               ),
-            ),
-            // Bouton User
-            Container(
               decoration: BoxDecoration(
-                color:
-                    _IndexSelect == 1 ? Color(0xFF5CA767) : Colors.transparent,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: Icon(
-                  Icons.chat,
-                  color: _IndexSelect == 1 ? Colors.white : Color(0xFF5CA767),
-                ),
-                onPressed: () => _OnTapIndex(1),
-                iconSize: 30,
-                padding: EdgeInsets.all(12.0),
-                splashRadius: 20.0,
-                splashColor: Colors.transparent,
-                constraints: BoxConstraints(),
+                color: Color(0xFF312070),
+                borderRadius: BorderRadius.circular(40.0),
               ),
             ),
           ],
         ),
       ),
-      // fin AppBar De bas
     );
+  }
+
+  Future<void> _sendMessage() async {
+    final message = _chatController.text.trim();
+    if (message.isEmpty) return;
+
+    final userId =
+        _auth.currentUser?.uid; // Récupération de l'ID de l'utilisateur
+    if (userId == null) {
+      print("Erreur : utilisateur non authentifié");
+      return;
+    }
+
+    // Créez un nouvel objet de message
+    final newMessage = {
+      'text': message,
+      'CreatAt': Timestamp.fromDate(DateTime.now()),
+      'senderId': userId,
+      'status': 'non lue',
+    };
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('conversations')
+          .doc(widget.chatId)
+          .collection('messages')
+          .add(newMessage);
+    } catch (e) {
+      print("Erreur lors de l'envoi du message : $e");
+    }
+
+    _chatController.clear();
   }
 }

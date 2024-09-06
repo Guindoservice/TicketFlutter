@@ -6,7 +6,8 @@ import '../ticket/DetailTicket.dart';
 
 class CateTechnique extends StatefulWidget {
   final String id;
-  const CateTechnique({super.key, required this.id});
+  final String description;
+  const CateTechnique({super.key, required this.id, required this.description});
 
   @override
   State<CateTechnique> createState() => _CateTechniqueState();
@@ -53,7 +54,13 @@ class _CateTechniqueState extends State<CateTechnique> {
             color: Color(0xFFFFFFFF),
           ),
           onPressed: () {
-            Navigator.popAndPushNamed(context, "/Principale");
+            Navigator.pop(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => CateTechnique(
+                          id: '',
+                          description: '',
+                        )));
           },
         ),
         title: Text(
@@ -72,7 +79,10 @@ class _CateTechniqueState extends State<CateTechnique> {
         ],
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('tickets').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('tickets')
+            .where('category', isEqualTo: 'TECHNIQUE')
+            .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -92,6 +102,10 @@ class _CateTechniqueState extends State<CateTechnique> {
             itemCount: tickets.length,
             itemBuilder: (context, index) {
               var ticket = tickets[index];
+              String truncatedDescription = ticket['description'].length > 50
+                  ? ticket['description'].substring(0, 50) + '...'
+                  : ticket['description'];
+
               return InkWell(
                 onTap: () => _navigateDetailTicket(ticket),
                 child: Card(
@@ -143,7 +157,7 @@ class _CateTechniqueState extends State<CateTechnique> {
                           height: 10,
                         ),
                         Text(
-                          ticket['description'],
+                          truncatedDescription,
                           style:
                               TextStyle(color: Color(0xFF312070), fontSize: 15),
                         ),
@@ -252,7 +266,7 @@ class _CateTechniqueState extends State<CateTechnique> {
           title: ticket['title'],
           description: ticket['description'],
           id: ticket.id,
-          stauts: '',
+          status: '',
         ),
       ),
     );
